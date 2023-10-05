@@ -2,12 +2,12 @@
 
 set -ue
 
-if [ $# -lt 5 ]
+if [ $# -lt 6 ]
 then
 	echo "
 	SEACR: Sparse Enrichment Analysis for CUT&RUN
 	
-	Usage: bash SEACR_1.3.sh <experimental bedgraph>.bg [<control bedgraph>.bg | <FDR threshold>] ["norm" | "non"] ["relaxed" | "stringent"] output prefix
+	Usage: bash SEACR_1.3.sh <experimental bedgraph>.bg [<control bedgraph>.bg | <FDR threshold>] ["norm" | "non"] ["relaxed" | "stringent"] ["rpath" | "Rscript"] output prefix
 	
 	Description of input fields:
 	
@@ -119,14 +119,14 @@ path=`dirname $0`
 if [[ -f $2 ]] && [[ $norm == "norm" ]]
 then
 	echo "Calculating threshold using normalized control: $(date)"
-	Rscript $path/SEACR_1.3.R --exp=$password.auc --ctrl=$password2.auc --norm=yes --output=$password
+	$6 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$password2.auc --norm=yes --output=$password
 elif [[ -f $2 ]]
 then
 	echo "Calculating threshold using non-normalized control: $(date)"
-	Rscript $path/SEACR_1.3.R --exp=$password.auc --ctrl=$password2.auc --norm=no --output=$password
+	$6 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$password2.auc --norm=no --output=$password
 else
 	echo "Using user-provided threshold: $(date)"
-	Rscript $path/SEACR_1.3.R --exp=$password.auc --ctrl=$2 --norm=no --output=$password
+	$6 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$2 --norm=no --output=$password
 fi
 	
 fdr=`cat $password.fdr.txt | sed -n '1p'`			## Added 5/15/19 for SEACR_1.1
@@ -173,9 +173,9 @@ fi
 
 if [[ $height == "relaxed" ]]
 then
-  cat $5.auc.threshold.merge.bed > $5.relaxed.bed
+  cat $6.auc.threshold.merge.bed > $6.relaxed.bed
 else
-  cat $5.auc.threshold.merge.bed > $5.stringent.bed
+  cat $6.auc.threshold.merge.bed > $6.stringent.bed
 fi
 
 echo "Removing temporary files: $(date)"
@@ -185,7 +185,7 @@ rm $password.auc
 rm $password.threshold.txt
 rm $password.auc.threshold.bed
 rm $password.fdr.txt  ## Added 5/15/19 for SEACR_1.1
-rm $5.auc.threshold.merge.bed
+rm $6.auc.threshold.merge.bed
 if [[ -f $2 ]]
 then
 	rm $password2.auc.bed
