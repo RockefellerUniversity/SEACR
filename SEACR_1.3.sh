@@ -119,14 +119,14 @@ path=`dirname $0`
 if [[ -f $2 ]] && [[ $norm == "norm" ]]
 then
 	echo "Calculating threshold using normalized control: $(date)"
-	$6 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$password2.auc --norm=yes --output=$password
+	$5 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$password2.auc --norm=yes --output=$password
 elif [[ -f $2 ]]
 then
 	echo "Calculating threshold using non-normalized control: $(date)"
-	$6 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$password2.auc --norm=no --output=$password
+	$5 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$password2.auc --norm=no --output=$password
 else
 	echo "Using user-provided threshold: $(date)"
-	$6 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$2 --norm=no --output=$password
+	$5 $path/SEACR_1.3.R --exp=$password.auc --ctrl=$2 --norm=no --output=$password
 fi
 	
 fdr=`cat $password.fdr.txt | sed -n '1p'`			## Added 5/15/19 for SEACR_1.1
